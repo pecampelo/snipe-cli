@@ -3,35 +3,45 @@
 const logger = require('./logger');
 const snipe = require('./snipe')
 
-const start = (input) => {
+const start = () => {
 
-	input.toString().split(' ');
+	let input = process.argv.slice(2).filter(e => e);
 
-	if (input.length === 0) {
-		return;
+	const inputCommand = input[0];
+	let inputArguments = input.slice(1, 3);
+
+	// console.log(inputCommand)
+	// console.log(inputArguments)
+
+	if (!inputCommand) {
+		const command = snipe.find(command => command.name == 'version');
+
+		try {
+
+			logger.command(command.name)
+			command.handler()
+
+		} catch (err) {
+			console.log('\n            ' + err + '\n')
+		}
 	}
 
-	if (input.length > 2 ) {
-		logger.invalid();
-		return;
+	else {
+
+		const command = snipe.find((com) => com.name == inputCommand || com.alias == inputCommand);
+		try {
+
+			logger.command(command.name)
+			command.handler(inputArguments)
+
+		} catch (err) {
+
+			console.log('\n            ' + err + '\n')
+
+		}
+
 	}
-
-	const commandList = Object.keys(snipe);
-	let command = [];
-
-
-	if (input[0].includes('-') === false) {
-
-		const longCommand = commandList.filter((com) => com.toString() == input);
-		if (longCommand !== undefined) { command.push(longCommand[0]); }
-	}
-
-	const shortCommand = commandList.filter((com) => com[0] == input[0][1]);
-	if (shortCommand[0] !== undefined) {	command.push(shortCommand); }
-
-	snipe[command[0]]()
-	process.exit();
-
 };
 
-start(process.argv.slice(2));
+start();
+
