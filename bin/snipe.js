@@ -1,13 +1,14 @@
 const logger = require('./logger');
 const http = require('http');
+const child_process = require('child_process')
 
 module.exports = [
 	{
 		"name": 'version',
 		"alias": '-v',
-		"description": '',
+		"description": 'declares the current package version',
 		"handler": function version() {
-			console.log('\nWelcome to Snipe! \nWe are currently on version 1.0!')
+			console.log('\nWelcome to Snipe! \nWe are currently on version 1.0!\n')
 		}
 	},
 	{
@@ -15,10 +16,9 @@ module.exports = [
 		"alias": '-I',
 		"description": '',
 		"handler": function init(arguments = '') {
-			if (!arguments) return;
+			if (!arguments) return ;
 			if (arguments > 4) return logger.invalid();
 
-			logger.intro()
 
 			}
 	},
@@ -37,29 +37,116 @@ module.exports = [
 	{
 		"name": '--logs',
 		"description": '',
-		"handler": function logs(argument1 = '', argument2 = '') {
-			console.log('\nLogs!');
+		"handler": function logs(argument1, argument2) {
+			console.log('\nlogs!');
 		}
 	},
 	{
 		"name": 'install',
 		"alias": 'i',
 		"description": '',
-		"handler": function install(argument1 = '', argument2 = '') {
-			console.log('\nInstall')
+		"handler": function install(inputArguments) {
+
+			let package = inputArguments[0], format = inputArguments[1], _format;
+
+			const allowedArguments = ['-D', '-g']
+			if (allowedArguments.includes(package) === true) {
+				_format = package, package = format;
+			}
+
+			if (allowedArguments.includes(_format) == false) {
+				console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
+			}
+
+			package = package + ' ' + _format;
+
+			try {
+
+				child_process.exec(`npm install ${package} `, (error, stdout, stderr) => {
+					if (error) {
+						console.error(error.message)
+						return;
+					}
+					if (stderr) {
+						console.error(`stderr: ${stderr}`);
+						return;
+					}
+					console.log(`${stdout}`)
+				})
+
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	},
+	{
+		"name": 'uninstall',
+		"description": '',
+		"handler": function uninstall(inputArguments) {
+
+			let package = inputArguments[0], format = inputArguments[1]
+
+			const allowedArguments = ['-D', '-g']
+			if (allowedArguments.includes(package) === true) {
+				_format = package, package = format;
+			}
+
+			if (allowedArguments.includes(_format) == false) {
+				console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
+			}
+
+			package = package + ' ' + _format;
+
+			try {
+
+				child_process.exec(`npm uninstall ${package} `, (error, stdout, stderr) => {
+					if (error) {
+						console.error(error.message)
+						return;
+					}
+					if (stderr) {
+						console.error(`stderr: ${stderr}`);
+						return;
+					}
+					console.log(`${stdout}`)
+				})
+
+			} catch (err) {
+				console.log(err);
+			}
 		}
 	},
 	{
 		"name": 'ls',
-		"description": '',
-		"handler": function ls() {
-			console.log('\nNode list')
+		"description": 'Listing all items inside this client',
+		"handler": function ls(folder, format) {
+
+			if (!["-lh, ''"].includes(format)) {
+				return console.error('\n arguments to command are invalid: ' + extraArguments.join(' '))
+			}
+
+			try {
+
+				child_process.exec(`ls ${folder.join(' ')} `, (error, stdout, stderr) => {
+					if (error) {
+						console.error(error.message)
+						return;
+					}
+					if (stderr) {
+						console.error(`stderr: ${stderr}`);
+						return;
+					}
+					console.log(`\n${stdout}`)
+				})
+
+			} catch (err) {
+				console.log(err);
+			}
 		}
 
 	},
 	{
-		"name": 'start',
-		"alias": '-go',
+		"name": 'run',
 		"description": '',
 		"handler":
 		function start() {

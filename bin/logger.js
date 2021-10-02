@@ -6,16 +6,31 @@ module.exports = {
 		console.log('\n     Welcome to Snipe CLI!     \n       Precise and sharp!    \n');
 		console.log('------------------------------------------------------------------------\n');
 	},
-	command(input) {
-		console.log(`\n > ${input}`)
+	command(input, argument) {
+
+		if (argument == undefined) { argument = ['']}
+
+		console.log(`\n > ${input} ${argument.join(' ')}`)
+
 	},
-	invalid(extraMessage = '') {
-		console.log('\n   Command invalid! ');
-		console.log(`\n\n   ${extraMessage} `);
-		console.log('\n\n   Please, use one of these commands:\n');
-		console.log(Object.keys(snipe));
+	commandList() {
+
+		let list = []
+		snipe.forEach((command) => {
+			let description = command.description !== '' ? command.description : undefined;
+			list.push({'name': command.name, 'description': description});
+		});
+		console.table(list);
+
+	},
+	invalid(extraMessage) {
+
+		console.log('\nCommand invalid! ');
+		if (extraMessage != undefined) {	console.log(`\n\n${extraMessage} `); }
+		console.log('\nPlease, use one of these commands:\n');
+		console.log(`${snipe.map((item) => item.name).join([separator = ', \n'])}`);
+
 	},
 	error() {},
-	waiting() {},
-	ending() {}
+	waitingUserInput() {},
 };

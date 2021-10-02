@@ -6,37 +6,38 @@ const snipe = require('./snipe')
 const start = () => {
 
 	let input = process.argv.slice(2).filter(e => e);
-
-	const inputCommand = input[0];
+	let inputCommand = input[0];
 	let inputArguments = input.slice(1, 3);
 
-	// console.log(inputCommand)
-	// console.log(inputArguments)
-
 	if (!inputCommand) {
-		const command = snipe.find(command => command.name == 'version');
 
-		try {
+			const command = snipe.find(command => command.name == '--help');
 
 			logger.command(command.name)
 			command.handler()
+			logger.commandList()
 
-		} catch (err) {
-			console.log('\n            ' + err + '\n')
-		}
 	}
 
 	else {
 
-		const command = snipe.find((com) => com.name == inputCommand || com.alias == inputCommand);
 		try {
 
-			logger.command(command.name)
+			const command = snipe.find((com) => com.name == inputCommand || com.alias == inputCommand);
+
+			logger.command(command.name, inputArguments)
 			command.handler(inputArguments)
+
+		// Add code here
+
+
+
+
 
 		} catch (err) {
 
-			console.log('\n            ' + err + '\n')
+			logger.invalid()
+			console.log(err)
 
 		}
 
