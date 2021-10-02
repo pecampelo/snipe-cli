@@ -1,6 +1,7 @@
 const logger = require('./logger');
 const http = require('http');
-const child_process = require('child_process')
+const child_process = require('child_process');
+const { NOTIMP } = require('dns');
 
 module.exports = [
 	{
@@ -47,22 +48,26 @@ module.exports = [
 		"description": '',
 		"handler": function install(inputArguments) {
 
-			let package = inputArguments[0], format = inputArguments[1], _format;
+			let package = inputArguments[0], format = inputArguments[1], _format = '';
+
 
 			const allowedArguments = ['-D', '-g']
 			if (allowedArguments.includes(package) === true) {
-				_format = package, package = format;
+				_format = package;
+				package = format;
 			}
 
-			if (allowedArguments.includes(_format) == false) {
-				console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
+			if (_format !== undefined && package === undefined) {
+
+				return console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
 			}
 
-			package = package + ' ' + _format;
+			let pack = package + ' ' + _format;
 
+			console.log(pack)
 			try {
 
-				child_process.exec(`npm install ${package} `, (error, stdout, stderr) => {
+				child_process.exec(`npm install ${pack} `, (error, stdout, stderr) => {
 					if (error) {
 						console.error(error.message)
 						return;
@@ -84,22 +89,24 @@ module.exports = [
 		"description": '',
 		"handler": function uninstall(inputArguments) {
 
-			let package = inputArguments[0], format = inputArguments[1]
+			let package = inputArguments[0], format = inputArguments[1], _format = '';
 
 			const allowedArguments = ['-D', '-g']
 			if (allowedArguments.includes(package) === true) {
-				_format = package, package = format;
+				_format = package;
+				package = format;
 			}
 
-			if (allowedArguments.includes(_format) == false) {
-				console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
+			if (_format !== undefined && package === undefined) {
+				return console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
 			}
 
-			package = package + ' ' + _format;
+			let pack = package + ' ' + _format;
 
+			console.log(pack)
 			try {
 
-				child_process.exec(`npm uninstall ${package} `, (error, stdout, stderr) => {
+				child_process.exec(`npm uninstall ${pack} `, (error, stdout, stderr) => {
 					if (error) {
 						console.error(error.message)
 						return;
@@ -121,13 +128,15 @@ module.exports = [
 		"description": 'Listing all items inside this client',
 		"handler": function ls(folder, format) {
 
-			if (!["-lh, ''"].includes(format)) {
+			let extraArguments = [folder, format]
+
+			if (!["-lh, ''"].includes(folder) == false) {
 				return console.error('\n arguments to command are invalid: ' + extraArguments.join(' '))
 			}
 
 			try {
 
-				child_process.exec(`ls ${folder.join(' ')} `, (error, stdout, stderr) => {
+				child_process.exec(`ls ${extraArguments.join(' ')} `, (error, stdout, stderr) => {
 					if (error) {
 						console.error(error.message)
 						return;
