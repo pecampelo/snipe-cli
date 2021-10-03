@@ -1,9 +1,9 @@
-const logger = require('./logger');
+// const logger = require('./logger');
 const http = require('http');
 const child_process = require('child_process');
-const { NOTIMP } = require('dns');
+import { Command } from "./snipe.d";
 
-module.exports = [
+export const snipe: Command[] = [
 	{
 		"name": 'version',
 		"alias": '-v',
@@ -14,11 +14,8 @@ module.exports = [
 	},
 	{
 		"name": 'init',
-		"alias": '-I',
 		"description": '',
-		"handler": function init(arguments = '') {
-			if (!arguments) return ;
-			if (arguments > 4) return logger.invalid();
+		"handler": function init(argument1) {
 
 
 			}
@@ -48,26 +45,26 @@ module.exports = [
 		"description": '',
 		"handler": function install(inputArguments) {
 
-			let package = inputArguments[0], format = inputArguments[1], _format = '';
+			let packed = inputArguments[0], format = inputArguments[1], _format = '';
 
 
 			const allowedArguments = ['-D', '-g']
-			if (allowedArguments.includes(package) === true) {
-				_format = package;
-				package = format;
+			if (allowedArguments.includes(packed) === true) {
+				_format = packed;
+				packed = format;
 			}
 
-			if (_format !== undefined && package === undefined) {
+			if (_format !== undefined && packed === undefined) {
 
 				return console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
 			}
 
-			let pack = package + ' ' + _format;
+			let pack = packed + ' ' + _format;
 
 			console.log(pack)
 			try {
 
-				child_process.exec(`npm install ${pack} `, (error, stdout, stderr) => {
+				child_process.exec(`npm install ${pack} `, (error: any, stdout: any, stderr: any) => {
 					if (error) {
 						console.error(error.message)
 						return;
@@ -89,24 +86,24 @@ module.exports = [
 		"description": '',
 		"handler": function uninstall(inputArguments) {
 
-			let package = inputArguments[0], format = inputArguments[1], _format = '';
+			let packed : string = inputArguments[0], format = inputArguments[1], _format = '';
 
 			const allowedArguments = ['-D', '-g']
-			if (allowedArguments.includes(package) === true) {
-				_format = package;
-				package = format;
+			if (allowedArguments.includes(packed) === true) {
+				_format = packed;
+				packed = format;
 			}
 
-			if (_format !== undefined && package === undefined) {
+			if (_format !== undefined && packed === undefined) {
 				return console.error('\n arguments to command are invalid: ' + inputArguments.join(' '))
 			}
 
-			let pack = package + ' ' + _format;
+			let pack = packed + ' ' + _format;
 
 			console.log(pack)
 			try {
 
-				child_process.exec(`npm uninstall ${pack} `, (error, stdout, stderr) => {
+				child_process.exec(`npm uninstall ${pack} `, (error: any, stdout: any, stderr: any) => {
 					if (error) {
 						console.error(error.message)
 						return;
@@ -136,7 +133,7 @@ module.exports = [
 
 			try {
 
-				child_process.exec(`ls ${extraArguments.join(' ')} `, (error, stdout, stderr) => {
+				child_process.exec(`ls ${extraArguments.join(' ')} `, (error: any, stdout: any, stderr: any) => {
 					if (error) {
 						console.error(error.message)
 						return;
@@ -188,19 +185,22 @@ module.exports = [
 
 				const url = new URL(originalURL);
 
-				http.get(url, res => {
-					let data = [];
+				http.get(url, (res: any) => {
+					let data: any = [];
 
-					res.on('data', (chunk) => {
+					res.on('data', (chunk: any) => {
 						data.push(chunk);
 					});
 
 					// The whole response has been received. Print out the result.
 					res.on('end', async () => {
-						let me = await JSON.parse(Buffer.concat(data));
+
+						let concat: any = Buffer.concat(data);
+						let me = await JSON.parse(concat);
 						console.log(me)
+
 					});
-				}).on('error', (err) => {
+				}).on('error', (err: any) => {
 					console.log('\n' + err)
 				})
 

@@ -4,19 +4,24 @@
   "description": "",
   "main": "bin/cli.js",
   "bin": {
-    "snipe": "./bin/cli.js"
+    "snipe": "./bin/src/cli.js"
   },
   "scripts": {
     "test": "mocha --exit",
-    "start": "node bin/cli.js"
+    "start": "ts-node src/cli.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "mocha": "^9.1.2"
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.10.2",
+    "mocha": "^9.1.2",
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
   },
   "dependencies": {
-    "undefined": "^0.1.0"
+    "uninstall": "^0.0.0"
   }
 }
