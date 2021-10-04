@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = void 0;
-const snipe = require('./snipe');
+const snipe = require('./commandList');
 class Logger {
     intro() {
         console.log('\n------------------------------------------------------------------------');
@@ -9,6 +8,8 @@ class Logger {
         console.log('------------------------------------------------------------------------\n');
     }
     logCommand([input, inputArguments]) {
+        console.log(input);
+        console.log(inputArguments);
     }
     logCommandList() {
         let list;
@@ -29,4 +30,4 @@ class Logger {
         console.log(`${snipe.map((command) => command.name).join(', \n')}`);
     }
 }
-exports.Logger = Logger;
+exports.default = new Logger();

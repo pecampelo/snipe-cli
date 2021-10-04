@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.snipe = void 0;
+exports.commandList = void 0;
 // Native node modules
 const path_1 = __importDefault(require("path"));
 const config_1 = __importDefault(require("./commands/config"));
 const help_1 = __importDefault(require("./commands/help"));
 const install_1 = __importDefault(require("./commands/install"));
 const uninstall_1 = __importDefault(require("./commands/uninstall"));
+const logs_1 = __importDefault(require("./commands/logs"));
 const ls_1 = __importDefault(require("./commands/ls"));
 const test_1 = __importDefault(require("./commands/test"));
 const whoami_1 = __importDefault(require("./commands/whoami"));
@@ -17,9 +18,11 @@ const fetch_1 = __importDefault(require("./commands/fetch"));
 function requireCommand(commandName) {
     let match = require(path_1.default.join(__dirname + '/commands/' + commandName));
     if (match)
-        return match();
+        return (match) => {
+            match();
+        };
 }
-exports.snipe = [
+exports.commandList = [
     {
         "name": 'version',
         "alias": '-v',
@@ -46,7 +49,7 @@ exports.snipe = [
     {
         "name": '--logs',
         "description": '',
-        "handler": logs,
+        "handler": logs_1.default,
     },
     {
         "name": 'install',

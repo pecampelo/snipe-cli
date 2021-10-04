@@ -1,7 +1,7 @@
-const snipe = require('./snipe');
-import { Command } from "./snipe.d"
+const snipe = require('./commandList');
+import { Command } from "./commandList.d"
 
-export class Logger {
+class Logger {
 
 	intro(): void {
 		console.log('\n------------------------------------------------------------------------');
@@ -37,4 +37,6 @@ export class Logger {
 	}
 
 }
+
+export default new Logger();
 
