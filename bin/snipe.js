@@ -2,7 +2,32 @@ const logger = require('./logger');
 const http = require('http');
 const child_process = require('child_process');
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs');
+
+const readline = require('readline').createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+
+
+const stdcall = (error, stdout, stderr) => {
+	if (error) {
+			console.error(error.message)
+			return;
+	}
+	if (stderr) {
+			console.error(`stderr: ${stderr}`);
+			return;
+	}
+	console.log(`\n${stdout}`)
+}
+
+const execute = (command, place = process.cwd()) => {
+	child_process.exec(command, { cwd: place });
+}
+
+
 
 module.exports = [{
         "name": 'version',
@@ -10,33 +35,84 @@ module.exports = [{
         "description": 'declares the current package version',
         "handler": function version() {
             console.log('\nWelcome to Snipe! \nWe are currently on version 1.0!\n')
+            process.exit();
         }
     },
     {
         "name": 'init',
         "alias": '-I',
-        "description": '',
-        "handler": function init(arguments = '') {
-            if (!arguments) return;
-            if (arguments > 4) return logger.invalid();
+        "description": 'Initiate a new template project',
+        "handler": function init(arguments) {
+
+					if (!arguments) {
+
+						readline.question(`\nWhat will be the folder name? `, folderName => {
+
+							readline.question(`\nShould there be a template? (Y/N) `, answer => {
+
+								if (['n', 'N'].includes(answer) === true) {
+
+									child_process.exec(`mkdir ${folderName} && cd ${folderName}`);
+									console.log(`\nEmpty folder created at ${folderName}`);
+									return readline.close();
+
+								}
+
+								if (['y', 'Y'].includes(answer) === true) {
+									const go = path.join(process.cwd(), `./${folderName}`);
+									execute(`mkdir ${folderName}`);
+									execute(`cd ${folderName}`);
+									execute(`npm init -y`, go);
+									execute(`git init -y`, go);
+									execute(`touch .editorconfig .gitignore README.md`, go);
+									return readline.close();
+
+								}
+
+								else {
+
+									console.log(`\nCan't do that`);
+									return readline.close();
+
+								}
+
+							})
+
+
+						});
+
+					}
+
+					else {
+						arguments.forEach((argument) => {
+							execute(`mkdir ${argument}`);
+							const go = path.join(process.cwd(), `./${argument}`);
+							execute(`cd ${argument}`);
+							execute(`npm init -y`, go);
+							execute(`git init -y`, go);
+							execute(`touch .editorconfig .gitignore README.md`, go);
+						})
+					}
 
 
         }
     },
     {
-        "name": '--config',
+        "name": 'config',
         "description": '',
         "handler": function config(argument1 = '', argument2 = '') {}
     },
     {
-        "name": '--help',
-        "description": '',
-        "handler": function help(argument1 = '', argument2 = '', argument3 = '') {
-            console.log('\nCommands!')
+        "name": 'help',
+        "description": 'Get command info',
+        "handler": function help(argument1 = '') {
+          console.log('\nCommands!\n');
+
+          process.exit();
         }
     },
     {
-        "name": '--logs',
+        "name": 'logs',
         "description": '',
         "handler": function logs(argument1, argument2) {
             console.log('\nLogs!');
@@ -69,17 +145,7 @@ module.exports = [{
             console.log(pack)
             try {
 
-                child_process.exec(`npm install ${pack} `, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(error.message)
-                        return;
-                    }
-                    if (stderr) {
-                        console.error(`stderr: ${stderr}`);
-                        return;
-                    }
-                    console.log(`${stdout}`)
-                })
+                child_process.exec(`npm install ${pack} `, stdcall())
 
             } catch (err) {
                 console.log(err);
@@ -111,17 +177,7 @@ module.exports = [{
             console.log(pack)
             try {
 
-                child_process.exec(`npm uninstall ${pack} `, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(error.message)
-                        return;
-                    }
-                    if (stderr) {
-                        console.error(`stderr: ${stderr}`);
-                        return;
-                    }
-                    console.log(`${stdout}`)
-                })
+                child_process.exec(`npm uninstall ${pack} `, stdcall())
 
             } catch (err) {
                 console.log(err);
@@ -141,17 +197,7 @@ module.exports = [{
 
             try {
 
-                child_process.exec(`ls ${extraArguments.join(' ')} `, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(error.message)
-                        return;
-                    }
-                    if (stderr) {
-                        console.error(`stderr: ${stderr}`);
-                        return;
-                    }
-                    console.log(`\n${stdout}`)
-                })
+                child_process.exec(`ls ${extraArguments.join(' ')} `, stdcall())
 
             } catch (err) {
                 console.log(err);
@@ -161,23 +207,25 @@ module.exports = [{
     },
     {
         "name": 'run',
-        "description": '',
-        "handler": function start() {
-            console.log('\nstart')
+        "description": 'runs any js file',
+        "handler": function run(inputArguments) {
+
+					if (!inputArguments) return;
+
+          child_process.exec(`node ${inputArguments}`)
         }
     },
-    {
-        "name": 'test',
-        "alias": '-t',
-        "description": '',
-        "handler": function test() {
-            console.log('\ntest')
-        }
-    },
+		{
+			"name": 'rm',
+			"description": 'remove a file or a folder',
+			"handler": function rm(inputArguments) {
+				child_process.exec(`rm ${inputArguments}`);
+			}
+		},
     {
         "name": 'whoami',
         "alias": '?',
-        "description": '',
+        "description": 'Get user data',
         "handler": function whoami() {
 
             console.log('\nWho am I')
@@ -186,7 +234,7 @@ module.exports = [{
     {
         "name": 'fetch',
         "alias": '-f',
-        "description": '',
+        "description": 'Fetch HTML files from the web',
         "handler": function fetch(originalURL) {
 
             try {
@@ -205,14 +253,14 @@ module.exports = [{
                     res.on('end', async() => {
                         let me = Buffer.concat(data);
                         const folder = 'fetch';
-                        const file = 'file.html'
+                        const file = Math.floor(Math.random * 10000);
                         const fullPath = path.join(__dirname, '.../');
 
                         child_process.exec(`cd ${fullPath}`);
                         child_process.exec(`mkdir ${folder}`);
                         child_process.exec(`touch ${file}`)
 
-                        fs.writeFileSync(path.join(`./${folder}/${file}`), me, 'utf8');
+                        fs.writeFileSync(path.join(`./${folder}/${file}.html`), me, 'utf8');
 
                     });
                 }).on('error', (err) => {
@@ -222,7 +270,7 @@ module.exports = [{
 
             } catch (err) {
 
-                console.log('\n            ' + err + '\n')
+              logger.invalid(err);
 
             }
         }

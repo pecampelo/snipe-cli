@@ -11,11 +11,10 @@ const start = () => {
 
 	if (!inputCommand) {
 
-			const command = snipe.find(command => command.name == '--help');
+			const command = snipe.find(command => command.name == 'help');
 
 			logger.command(command.name)
 			command.handler()
-			logger.commandList()
 
 	}
 
@@ -37,7 +36,7 @@ const start = () => {
 		} catch (err) {
 
 			logger.invalid()
-			console.log(err)
+			console.log(err);
 
 		}
 
