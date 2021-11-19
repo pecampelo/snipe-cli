@@ -20,11 +20,11 @@ const stdcall = (error, stdout, stderr) => {
 			console.error(`stderr: ${stderr}`);
 			return;
 	}
-	console.log(`\n${stdout}`)
+    return;
 }
 
 const execute = (command, place = process.cwd()) => {
-	child_process.exec(command, { cwd: place });
+	child_process.exec(command, { cwd: place }, stdcall);
 }
 
 
@@ -63,7 +63,7 @@ module.exports = [{
 									execute(`mkdir ${folderName}`);
 									execute(`cd ${folderName}`);
 									execute(`npm init -y`, go);
-									execute(`git init -y`, go);
+									execute(`git init -q`, go);
 									execute(`touch .editorconfig .gitignore README.md`, go);
 									return readline.close();
 
@@ -79,6 +79,7 @@ module.exports = [{
 							})
 
 
+                            process.exit()
 						});
 
 					}
@@ -89,12 +90,12 @@ module.exports = [{
 							const go = path.join(process.cwd(), `./${argument}`);
 							execute(`cd ${argument}`);
 							execute(`npm init -y`, go);
-							execute(`git init -y`, go);
+							execute(`git init -q`, go);
 							execute(`touch .editorconfig .gitignore README.md`, go);
-						})
+                            return;
+						});
+
 					}
-
-
         }
     },
     {

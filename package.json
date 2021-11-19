@@ -7,16 +7,15 @@
     "snipe": "./bin/cli.js"
   },
   "scripts": {
+    "snipe": "npm install -g .",
     "test": "mocha --exit",
-    "start": "node bin/cli.js"
+    "commands": "node bin/cli.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "mocha": "^9.1.2"
-  },
-  "dependencies": {
-    "undefined": "^0.1.0"
+    "@types/node": "^16.11.9",
+    "typescript": "^4.5.2"
   }
 }
