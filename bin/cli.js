@@ -11,10 +11,9 @@ const start = () => {
 
 	if (!inputCommand) {
 
-			const command = snipe.find(command => command.name == 'help');
+		const command = snipe.find(command => command.name == 'help');
 
-			logger.command(command.name)
-			command.handler()
+		command.handler();
 
 	}
 
@@ -25,18 +24,11 @@ const start = () => {
 			const command = snipe.find((com) => com.name == inputCommand || com.alias == inputCommand);
 
 			logger.command(command.name, inputArguments)
-			command.handler(inputArguments)
-
-		// Add code here
-
-
-
-
+			command.handler(inputArguments);
 
 		} catch (err) {
 
 			logger.invalid()
-			console.log(err);
 
 		}
 
