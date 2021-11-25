@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const logger = require('./logger');
-const snipe = require('./snipe')
+const snipe = require('./snipe');
 
 const start = () => {
 
@@ -9,11 +9,10 @@ const start = () => {
 	let inputCommand = input[0];
 	let inputArguments = input.slice(1, 3);
 
-	if (!inputCommand) {
+	if (!inputCommand || inputCommand === 'commands') {
 
-		const command = snipe.find(command => command.name == 'help');
-
-		command.handler();
+		console.table(snipe)
+		process.exit();
 
 	}
 
@@ -29,6 +28,7 @@ const start = () => {
 		} catch (err) {
 
 			logger.invalid()
+			process.exit()
 
 		}
 
